@@ -231,16 +231,6 @@
 
             <div class="row">
                 <div class="row-label">
-                    <label for="sl_no">N° de registro</label>
-                    <span class="hint">Identificador del candidato</span>
-                </div>
-                <div class="ctrl">
-                    <input type="number" id="sl_no" name="sl_no" min="1" max="9999" step="1" placeholder="1" required>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="row-label">
                     <label for="gender">Género</label>
                 </div>
                 <div class="ctrl ctrl-wide">
@@ -381,7 +371,6 @@ document.getElementById('ssc_p').addEventListener('input', function() {
 
 document.getElementById('main-form').addEventListener('submit', function(e) {
     var fields = [
-        {id:'sl_no',    label:'N° de registro',      min:1,   max:9999, integer:true},
         {id:'ssc_p',    label:'Secundaria',           min:0,   max:20},
         {id:'hsc_p',    label:'Educación superior',   min:0,   max:20},
         {id:'degree_p', label:'Pregrado',             min:0,   max:20},
@@ -438,6 +427,8 @@ document.getElementById('main-form').addEventListener('submit', function(e) {
 document.getElementById('main-form').querySelectorAll('input[type="number"]').forEach(function(el) {
     el.addEventListener('input', function() { el.classList.remove('invalid'); });
 });
+
+
 </script>
 </body>
 </html>

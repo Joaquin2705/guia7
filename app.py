@@ -23,14 +23,7 @@ def _parse_grade(form, name, label):
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        raw_sl = request.form.get('sl_no', '')
-        try:
-            sl_no = float(raw_sl)
-        except (ValueError, TypeError):
-            raise ValueError("'N° de registro' debe ser un número entero positivo.")
-        if sl_no < 1 or sl_no != int(sl_no):
-            raise ValueError("'N° de registro' debe ser un entero positivo (ej: 1, 2, 3…).")
-        sl_no = int(sl_no)
+        sl_no = 1
 
         gender = request.form.get('gender', '')
         if gender not in ('M', 'F'):
