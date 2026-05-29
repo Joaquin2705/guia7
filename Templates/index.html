@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictor Laboral — RR.HH.</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:           #F2F2F7;
+            --card:         #FFFFFF;
+            --accent:       #007AFF;
+            --accent-dark:  #0062CC;
+            --green:        #34C759;
+            --red:          #FF3B30;
+            --text-1:       #1C1C1E;
+            --text-2:       #8E8E93;
+            --border:       rgba(60,60,67,0.12);
+            --shadow:       0 2px 16px rgba(0,0,0,0.07);
+            --r:            13px;
+            --r-sm:         8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            padding: 48px 20px 80px;
+            color: var(--text-1);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 560px; margin: 0 auto; }
+
+        /* ── Header ── */
+        .header { text-align: center; margin-bottom: 32px; }
+
+        .app-icon {
+            width: 72px; height: 72px;
+            background: linear-gradient(145deg, #007AFF 0%, #5856D6 100%);
+            border-radius: 20px;
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 28px rgba(0,122,255,0.38);
+        }
+
+        .app-icon svg { width: 36px; height: 36px; fill: white; }
+
+        h1 {
+            font-size: 1.85rem; font-weight: 700;
+            letter-spacing: -0.6px; margin-bottom: 5px;
+        }
+
+        .subtitle { font-size: 0.93rem; color: var(--text-2); }
+
+        /* ── Info Banner ── */
+        .banner {
+            background: rgba(0,122,255,0.08);
+            border: 1px solid rgba(0,122,255,0.22);
+            border-radius: var(--r);
+            padding: 13px 16px;
+            margin-bottom: 24px;
+            display: flex; gap: 11px; align-items: flex-start;
+        }
+
+        .banner-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+        .banner p { font-size: 0.84rem; color: #005FCC; line-height: 1.55; }
+        .banner strong { font-weight: 600; }
+
+        /* ── Card ── */
+        .card {
+            background: var(--card);
+            border-radius: var(--r);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .card-label {
+            padding: 14px 20px 6px;
+            font-size: 0.69rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.65px;
+            color: var(--text-2);
+        }
+
+        /* ── Form row ── */
+        .row {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px;
+            padding: 13px 20px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.12s;
+        }
+
+        .row:last-child { border-bottom: none; }
+        .row:focus-within { background: rgba(0,122,255,0.025); }
+
+        .row-label { flex: 1; min-width: 0; }
+        .row-label label { display: block; font-size: 0.91rem; font-weight: 500; margin-bottom: 2px; }
+        .hint { font-size: 0.75rem; color: var(--text-2); line-height: 1.4; }
+
+        /* ── Inputs ── */
+        .ctrl { flex-shrink: 0; width: 115px; }
+        .ctrl-wide { width: 165px; }
+
+        .ctrl input,
+        .ctrl select {
+            width: 100%; padding: 7px 11px;
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            font-family: inherit; font-size: 0.91rem;
+            color: var(--text-1); background: var(--bg);
+            outline: none;
+            transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+            -webkit-appearance: none; appearance: none;
+            text-align: right;
+        }
+
+        .ctrl select {
+            text-align: left;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%238E8E93' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px;
+        }
+
+        .ctrl input:focus,
+        .ctrl select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3.5px rgba(0,122,255,0.16);
+            background: #fff;
+        }
+
+        /* ── Submit ── */
+        .btn {
+            width: 100%; padding: 15px;
+            background: var(--accent);
+            color: white; border: none;
+            border-radius: var(--r);
+            font-family: inherit; font-size: 1rem; font-weight: 600;
+            letter-spacing: 0.05px; cursor: pointer;
+            box-shadow: 0 5px 18px rgba(0,122,255,0.42);
+            transition: background 0.18s, box-shadow 0.18s, transform 0.1s;
+            margin-top: 8px;
+        }
+
+        .btn:hover { background: var(--accent-dark); box-shadow: 0 7px 22px rgba(0,122,255,0.52); }
+        .btn:active { transform: scale(0.975); }
+
+        /* ── Result ── */
+        .result {
+            margin-top: 22px; padding: 22px;
+            border-radius: var(--r); text-align: center;
+            animation: pop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+
+        @keyframes pop {
+            from { opacity: 0; transform: translateY(18px) scale(0.95); }
+            to   { opacity: 1; transform: translateY(0)   scale(1);    }
+        }
+
+        .contratado    { background: linear-gradient(135deg,rgba(52,199,89,.13),rgba(52,199,89,.05)); border: 1px solid rgba(52,199,89,.32); }
+        .no-contratado { background: linear-gradient(135deg,rgba(255,59,48,.13),rgba(255,59,48,.05)); border: 1px solid rgba(255,59,48,.32); }
+
+        .r-emoji  { font-size: 2.6rem; display: block; margin-bottom: 10px; }
+        .r-badge  { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 4px; }
+        .r-main   { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.4px; }
+        .r-sub    { font-size: 0.82rem; color: var(--text-2); margin-top: 6px; line-height: 1.5; }
+
+        .contratado    .r-badge { color: #28a745; }
+        .no-contratado .r-badge { color: #dc3545; }
+        .contratado    .r-main  { color: #1a6b2e; }
+        .no-contratado .r-main  { color: #b02a37; }
+
+        .banner-error {
+            background: rgba(255,59,48,0.08);
+            border: 1px solid rgba(255,59,48,0.30);
+            border-radius: var(--r);
+            padding: 13px 16px;
+            margin-bottom: 24px;
+            display: flex; gap: 11px; align-items: flex-start;
+        }
+        .banner-error p { font-size: 0.84rem; color: #b02a37; line-height: 1.55; font-weight: 500; }
+
+        input.invalid { border-color: var(--red) !important; box-shadow: 0 0 0 3.5px rgba(255,59,48,0.16) !important; }
+
+        .hint-btn {
+            background: none; border: none; padding: 0;
+            font-size: 0.75rem; color: var(--accent);
+            cursor: pointer; font-family: inherit;
+            text-decoration: underline; text-underline-offset: 2px;
+        }
+        .hint-btn:hover { color: var(--accent-dark); }
+
+        input.autofilled { border-color: rgba(0,122,255,0.5); background: rgba(0,122,255,0.04) !important; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="app-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+            </svg>
+        </div>
+        <h1>Predictor Laboral</h1>
+        <p class="subtitle">Sistema de predicción de empleabilidad — RR.HH.</p>
+    </div>
+
+    <!-- Banner -->
+    <div class="banner">
+        <span class="banner-icon">ℹ️</span>
+        <p>Ingresa notas en <strong>escala vigesimal (0–20)</strong>. El sistema convierte automáticamente a porcentaje. Ej: si sacaste 15, escribe 15.</p>
+    </div>
+
+    {% if error %}
+    <div class="banner-error">
+        <span class="banner-icon">⚠️</span>
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+
+    <form action="/predict" method="POST" novalidate id="main-form">
+
+        <!-- Personales -->
+        <div class="card">
+            <p class="card-label">Datos personales</p>
+
+            <div class="row">
+                <div class="row-label">
+                    <label for="sl_no">N° de registro</label>
+                    <span class="hint">Identificador del candidato</span>
+                </div>
+                <div class="ctrl">
+                    <input type="number" id="sl_no" name="sl_no" min="1" max="9999" step="1" placeholder="1" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="row-label">
+                    <label for="gender">Género</label>
+                </div>
+                <div class="ctrl ctrl-wide">
+                    <select id="gender" name="gender">
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="row-label">
+                    <label for="workex">Experiencia laboral</label>
+                </div>
+                <div class="ctrl ctrl-wide">
+                    <select id="workex" name="workex">
+                        <option value="Yes">Sí tengo</option>
+                        <option value="No">No tengo</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Académico -->
+        <div class="card">
+            <p class="card-label">Rendimiento académico</p>
+
+            <div class="row">
+                <div class="row-label">
+                    <label for="ssc_p">Secundaria</label>
+                    <span class="hint">Promedio general del colegio (1ro–5to)</span>
+                </div>
+                <div class="ctrl">
+                    <input type="number" id="ssc_p" name="ssc_p" step="0.1" min="0" max="20" placeholder="0–20" required>
+                </div>
+            </div>
+
+            <div class="row" id="row-hsc">
+                <div class="row-label">
+                    <label for="hsc_p">Pre-universitario / CEPRE / IB</label>
+                    <span class="hint">CEPRE, IB u otro programa. <button type="button" id="btn-copy-sec" class="hint-btn">Sin pre-uni → usar nota de secundaria</button></span>
+                </div>
+                <div class="ctrl">
+                    <input type="number" id="hsc_p" name="hsc_p" step="0.1" min="0" max="20" placeholder="0–20" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="row-label">
+                    <label for="degree_p">Pregrado</label>
+                    <span class="hint">Promedio general universitario</span>
+                </div>
+                <div class="ctrl">
+                    <input type="number" id="degree_p" name="degree_p" step="0.1" min="0" max="20" placeholder="0–20" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="row-label">
+                    <label for="mba_p">MBA</label>
+                    <span class="hint">Promedio obtenido en el MBA</span>
+                </div>
+                <div class="ctrl">
+                    <input type="number" id="mba_p" name="mba_p" step="0.1" min="0" max="20" placeholder="0–20" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empleabilidad -->
+        <div class="card">
+            <p class="card-label">Empleabilidad</p>
+
+            <div class="row">
+                <div class="row-label">
+                    <label for="etest_p">Examen de aptitudes</label>
+                    <span class="hint">Test de competencias laborales</span>
+                </div>
+                <div class="ctrl">
+                    <input type="number" id="etest_p" name="etest_p" step="0.1" min="0" max="20" placeholder="0–20" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="row-label">
+                    <label for="specialisation">Especialización MBA</label>
+                </div>
+                <div class="ctrl ctrl-wide">
+                    <select id="specialisation" name="specialisation">
+                        <option value="Mkt&Fin">Marketing y Finanzas</option>
+                        <option value="Mkt&HR">Marketing y RR.HH.</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn" type="submit">Predecir empleabilidad</button>
+
+    </form>
+
+    {% if result %}
+    <div class="result {{ 'contratado' if result == 'Contratado' else 'no-contratado' }}">
+        <span class="r-emoji">{{ '🎉' if result == 'Contratado' else '😞' }}</span>
+        <p class="r-badge">Resultado de predicción</p>
+        <p class="r-main">{{ result }}</p>
+        <p class="r-sub">
+            {% if result == 'Contratado' %}
+                El perfil tiene alta probabilidad de ser seleccionado.
+            {% else %}
+                El perfil no cumple los criterios de selección actuales.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+document.getElementById('btn-copy-sec').addEventListener('click', function() {
+    var secVal = document.getElementById('ssc_p').value.trim();
+    var hscEl  = document.getElementById('hsc_p');
+    if (secVal === '') {
+        alert('Primero ingresa tu promedio de Secundaria.');
+        document.getElementById('ssc_p').focus();
+        return;
+    }
+    hscEl.value = secVal;
+    hscEl.classList.add('autofilled');
+    hscEl.classList.remove('invalid');
+    setTimeout(function() { hscEl.classList.remove('autofilled'); }, 1800);
+});
+
+document.getElementById('ssc_p').addEventListener('input', function() {
+    var hscEl = document.getElementById('hsc_p');
+    if (hscEl.dataset.copied === '1') {
+        hscEl.value = this.value;
+    }
+});
+
+document.getElementById('main-form').addEventListener('submit', function(e) {
+    var fields = [
+        {id:'sl_no',    label:'N° de registro',      min:1,   max:9999, integer:true},
+        {id:'ssc_p',    label:'Secundaria',           min:0,   max:20},
+        {id:'hsc_p',    label:'Educación superior',   min:0,   max:20},
+        {id:'degree_p', label:'Pregrado',             min:0,   max:20},
+        {id:'etest_p',  label:'Examen de aptitudes',  min:0,   max:20},
+        {id:'mba_p',    label:'MBA',                  min:0,   max:20}
+    ];
+
+    var errorField = null;
+    var errorMsg   = '';
+
+    for (var i = 0; i < fields.length; i++) {
+        var f   = fields[i];
+        var el  = document.getElementById(f.id);
+        var raw = el.value.trim();
+        var val = parseFloat(raw);
+
+        el.classList.remove('invalid');
+
+        if (raw === '' || isNaN(val)) {
+            errorField = el;
+            errorMsg   = '"' + f.label + '" es obligatorio y debe ser un número.';
+            break;
+        }
+        if (f.integer && val !== Math.floor(val)) {
+            errorField = el;
+            errorMsg   = '"' + f.label + '" debe ser un número entero (sin decimales).';
+            break;
+        }
+        if (val < f.min || val > f.max) {
+            errorField = el;
+            errorMsg   = '"' + f.label + '" debe estar entre ' + f.min + ' y ' + f.max + '.';
+            break;
+        }
+    }
+
+    if (errorField) {
+        e.preventDefault();
+        errorField.classList.add('invalid');
+        errorField.focus();
+
+        var banner = document.getElementById('js-error-banner');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'js-error-banner';
+            banner.className = 'banner-error';
+            banner.innerHTML = '<span class="banner-icon">⚠️</span><p id="js-error-msg"></p>';
+            document.getElementById('main-form').insertAdjacentElement('beforebegin', banner);
+        }
+        document.getElementById('js-error-msg').textContent = errorMsg;
+        banner.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+});
+
+document.getElementById('main-form').querySelectorAll('input[type="number"]').forEach(function(el) {
+    el.addEventListener('input', function() { el.classList.remove('invalid'); });
+});
+</script>
+</body>
+</html>
