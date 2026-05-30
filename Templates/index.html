@@ -185,6 +185,17 @@
 
         input.invalid { border-color: var(--red) !important; box-shadow: 0 0 0 3.5px rgba(255,59,48,0.16) !important; }
 
+        .btn-reset {
+            display: block; width: 100%; padding: 13px;
+            background: none; border: 1.5px solid var(--accent);
+            border-radius: var(--r); color: var(--accent);
+            font-family: inherit; font-size: 0.95rem; font-weight: 600;
+            text-align: center; text-decoration: none; cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .btn-reset:hover { background: var(--accent); color: white; }
+
         .hint-btn {
             background: none; border: none; padding: 0;
             font-size: 0.75rem; color: var(--accent);
@@ -194,6 +205,56 @@
         .hint-btn:hover { color: var(--accent-dark); }
 
         input.autofilled { border-color: rgba(0,122,255,0.5); background: rgba(0,122,255,0.04) !important; }
+
+        /* ── Gauge ── */
+        .gauge-wrap { text-align: center; padding: 8px 0 4px; }
+        .gauge-svg  { width: 200px; display: inline-block; }
+        .gauge-fill {
+            stroke-dasharray: 267 267;
+            stroke-dashoffset: var(--offset);
+            animation: gaugeIn 1.2s cubic-bezier(0.25,0.46,0.45,0.94) both;
+        }
+        @keyframes gaugeIn {
+            from { stroke-dashoffset: 267; }
+            to   { stroke-dashoffset: var(--offset); }
+        }
+
+        /* ── Factores clave ── */
+        .fac-card  { margin-top: 14px; }
+        .fac-row   { padding: 13px 20px; border-bottom: 1px solid var(--border); }
+        .fac-row:last-child { border-bottom: none; }
+        .fac-top   { display: flex; justify-content: space-between; align-items: center;
+                     margin-bottom: 6px; gap: 8px; }
+        .fac-left  { display: flex; align-items: center; gap: 7px; }
+        .fac-arrow { font-size: 0.8rem; font-weight: 700; width: 18px; text-align: center;
+                     flex-shrink: 0; }
+        .fac-arrow.up   { color: var(--green); }
+        .fac-arrow.down { color: var(--red); }
+        .fac-label { font-size: 0.88rem; font-weight: 600; }
+        .fac-value { font-size: 0.78rem; color: var(--text-2); white-space: nowrap; }
+        .fac-bar-track { height: 6px; background: #E5E5EA; border-radius: 99px; overflow: hidden; }
+        .fac-bar-fill  { height: 100%; border-radius: 99px; transition: width 0.8s ease; }
+        .fac-bar-fill.up   { background: var(--green); }
+        .fac-bar-fill.down { background: var(--red); }
+        .fac-footer { display: flex; justify-content: space-between; margin-top: 3px; }
+        .fac-sign   { font-size: 0.7rem; font-style: italic; }
+        .fac-sign.up   { color: var(--green); }
+        .fac-sign.down { color: var(--red); }
+        .fac-contrib      { font-size: 0.75rem; font-weight: 700; }
+        .fac-contrib.up   { color: var(--green); }
+        .fac-contrib.down { color: var(--red); }
+        .fac-base-row  { display: flex; justify-content: space-between; align-items: center;
+                          padding: 11px 20px 4px; }
+        .fac-base-label{ font-size: 0.82rem; font-weight: 600; color: var(--text-2); }
+        .fac-base-value{ font-size: 0.88rem; font-weight: 700; color: var(--text-1); }
+        .fac-base-note { padding: 0 20px 12px; font-size: 0.72rem; color: var(--text-2);
+                          font-style: italic; border-bottom: 1px solid var(--border); }
+        .fac-note   { padding: 10px 20px; font-size: 0.72rem; color: var(--text-2);
+                      border-top: 1px solid var(--border); font-style: italic; line-height: 1.55; }
+        .bias-warn  { margin-top: 14px; background: rgba(255,149,0,0.08);
+                      border: 1px solid rgba(255,149,0,0.30); border-radius: var(--r);
+                      padding: 13px 16px; display: flex; gap: 10px; align-items: flex-start; }
+        .bias-warn p { font-size: 0.78rem; color: #7a4e00; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -235,8 +296,8 @@
                 </div>
                 <div class="ctrl ctrl-wide">
                     <select id="gender" name="gender">
-                        <option value="M">Masculino</option>
-                        <option value="F">Femenino</option>
+                        <option value="M" {{ 'selected' if form_vals and form_vals.gender == 'M' }}>Masculino</option>
+                        <option value="F" {{ 'selected' if form_vals and form_vals.gender == 'F' }}>Femenino</option>
                     </select>
                 </div>
             </div>
@@ -247,8 +308,8 @@
                 </div>
                 <div class="ctrl ctrl-wide">
                     <select id="workex" name="workex">
-                        <option value="Yes">Sí tengo</option>
-                        <option value="No">No tengo</option>
+                        <option value="Yes" {{ 'selected' if form_vals and form_vals.workex == 'Yes' }}>Sí tengo</option>
+                        <option value="No"  {{ 'selected' if form_vals and form_vals.workex == 'No' }}>No tengo</option>
                     </select>
                 </div>
             </div>
@@ -264,7 +325,7 @@
                     <span class="hint">Promedio general del colegio (1ro–5to)</span>
                 </div>
                 <div class="ctrl">
-                    <input type="number" id="ssc_p" name="ssc_p" step="0.1" min="0" max="20" placeholder="0–20" required>
+                    <input type="number" id="ssc_p" name="ssc_p" step="0.1" min="0" max="20" placeholder="0–20" required value="{{ form_vals.ssc_p if form_vals }}">
                 </div>
             </div>
 
@@ -274,7 +335,7 @@
                     <span class="hint">CEPRE, IB u otro programa. <button type="button" id="btn-copy-sec" class="hint-btn">Sin pre-uni → usar nota de secundaria</button></span>
                 </div>
                 <div class="ctrl">
-                    <input type="number" id="hsc_p" name="hsc_p" step="0.1" min="0" max="20" placeholder="0–20" required>
+                    <input type="number" id="hsc_p" name="hsc_p" step="0.1" min="0" max="20" placeholder="0–20" required value="{{ form_vals.hsc_p if form_vals }}">
                 </div>
             </div>
 
@@ -284,7 +345,7 @@
                     <span class="hint">Promedio general universitario</span>
                 </div>
                 <div class="ctrl">
-                    <input type="number" id="degree_p" name="degree_p" step="0.1" min="0" max="20" placeholder="0–20" required>
+                    <input type="number" id="degree_p" name="degree_p" step="0.1" min="0" max="20" placeholder="0–20" required value="{{ form_vals.degree_p if form_vals }}">
                 </div>
             </div>
 
@@ -294,7 +355,7 @@
                     <span class="hint">Promedio obtenido en el MBA</span>
                 </div>
                 <div class="ctrl">
-                    <input type="number" id="mba_p" name="mba_p" step="0.1" min="0" max="20" placeholder="0–20" required>
+                    <input type="number" id="mba_p" name="mba_p" step="0.1" min="0" max="20" placeholder="0–20" required value="{{ form_vals.mba_p if form_vals }}">
                 </div>
             </div>
         </div>
@@ -309,7 +370,7 @@
                     <span class="hint">Test de competencias laborales</span>
                 </div>
                 <div class="ctrl">
-                    <input type="number" id="etest_p" name="etest_p" step="0.1" min="0" max="20" placeholder="0–20" required>
+                    <input type="number" id="etest_p" name="etest_p" step="0.1" min="0" max="20" placeholder="0–20" required value="{{ form_vals.etest_p if form_vals }}">
                 </div>
             </div>
 
@@ -319,8 +380,8 @@
                 </div>
                 <div class="ctrl ctrl-wide">
                     <select id="specialisation" name="specialisation">
-                        <option value="Mkt&Fin">Marketing y Finanzas</option>
-                        <option value="Mkt&HR">Marketing y RR.HH.</option>
+                        <option value="Mkt&Fin" {{ 'selected' if form_vals and form_vals.specialisation == 'Mkt&Fin' }}>Marketing y Finanzas</option>
+                        <option value="Mkt&HR"  {{ 'selected' if form_vals and form_vals.specialisation == 'Mkt&HR' }}>Marketing y RR.HH.</option>
                     </select>
                 </div>
             </div>
@@ -328,12 +389,33 @@
 
         <button class="btn" type="submit">Predecir empleabilidad</button>
 
+    {% if result %}
+    <a href="/" class="btn-reset">Evaluar otro candidato</a>
+    {% endif %}
+
     </form>
 
     {% if result %}
-    <div class="result {{ 'contratado' if result == 'Contratado' else 'no-contratado' }}">
-        <span class="r-emoji">{{ '🎉' if result == 'Contratado' else '😞' }}</span>
-        <p class="r-badge">Resultado de predicción</p>
+    <div class="result {{ 'contratado' if result == 'Contratado' else 'no-contratado' }}" style="animation: pop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;">
+
+        <!-- Gauge -->
+        <div class="gauge-wrap">
+            <svg viewBox="0 0 200 110" class="gauge-svg">
+                <path d="M 15,100 A 85,85 0 0,1 185,100"
+                      fill="none" stroke="#E5E5EA" stroke-width="16" stroke-linecap="round"/>
+                <path d="M 15,100 A 85,85 0 0,1 185,100"
+                      fill="none" stroke="{{ gauge_color }}" stroke-width="16" stroke-linecap="round"
+                      class="gauge-fill" style="--offset: {{ gauge_offset }}"/>
+                <text x="100" y="80" text-anchor="middle"
+                      font-family="-apple-system,BlinkMacSystemFont,system-ui,sans-serif"
+                      font-size="28" font-weight="700" fill="{{ gauge_color }}">{{ probability }}%</text>
+                <text x="100" y="98" text-anchor="middle"
+                      font-family="-apple-system,BlinkMacSystemFont,system-ui,sans-serif"
+                      font-size="10" fill="#8E8E93">probabilidad de contratación</text>
+            </svg>
+        </div>
+
+        <p class="r-badge" style="margin-top:6px;">Resultado de predicción</p>
         <p class="r-main">{{ result }}</p>
         <p class="r-sub">
             {% if result == 'Contratado' %}
@@ -343,6 +425,57 @@
             {% endif %}
         </p>
     </div>
+
+    {% if factors %}
+    <div class="card fac-card" style="animation: pop 0.55s 0.2s cubic-bezier(0.34,1.56,0.64,1) both; opacity:0; animation-fill-mode:both;">
+        <p class="card-label">Factores clave para este candidato</p>
+
+        <!-- Base fija para todos los candidatos -->
+        <div class="fac-base-row">
+            <span class="fac-base-label">Probabilidad base del modelo</span>
+            <span class="fac-base-value">{{ base_prob }}%</span>
+        </div>
+        <div class="fac-base-note">
+            Punto de partida fijo, igual para cualquier candidato antes de ver sus datos.
+            Se obtiene del promedio histórico del dataset de entrenamiento.
+        </div>
+
+        {% for f in factors %}
+        <div class="fac-row">
+            <div class="fac-top">
+                <div class="fac-left">
+                    <span class="fac-arrow {{ f.direction }}">{{ '↑' if f.direction == 'up' else '↓' }}</span>
+                    <span class="fac-label">{{ f.label }}</span>
+                </div>
+                <span class="fac-value">{{ f.value }}</span>
+            </div>
+            <div class="fac-bar-track">
+                <div class="fac-bar-fill {{ f.direction }}" style="width: {{ f.bar_pct }}%;"></div>
+            </div>
+            <div class="fac-footer">
+                <span class="fac-sign {{ f.direction }}">
+                    {{ 'favoreció la contratación' if f.direction == 'up' else 'penalizó la contratación' }}
+                </span>
+                <span class="fac-contrib {{ f.direction }}">{{ f.contrib_str }} prob.</span>
+            </div>
+        </div>
+        {% endfor %}
+
+        <p class="fac-note">
+            Los porcentajes y flechas son específicos de este candidato, varían con cada perfil.
+            Se calculan con SHAP (Shapley Additive Explanations), que mide cuánto subió o bajó
+            cada dato la probabilidad final respecto a la base del modelo.
+        </p>
+    </div>
+    {% endif %}
+
+    {% if result %}
+    <div class="bias-warn">
+        <span class="banner-icon">⚠️</span>
+        <p>Este modelo fue entrenado con datos históricos de contratación. Los factores mostrados, incluyendo género, reflejan patrones del pasado, no criterios que deban usarse como regla. El modelo puede haber aprendido sesgos presentes en los datos originales. Se recomienda usar esta herramienta como apoyo informativo, no como decisión final.</p>
+    </div>
+    {% endif %}
+
     {% endif %}
 
 </div>
